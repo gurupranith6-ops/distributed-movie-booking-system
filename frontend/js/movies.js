@@ -63,6 +63,24 @@ const movies = [
 
 
 // =====================================
+// CHECK LOGIN
+// =====================================
+
+const username =
+    localStorage.getItem(
+        'username'
+    );
+
+if (!username) {
+
+    alert('Please login first');
+
+    window.location.href =
+        'login.html';
+}
+
+
+// =====================================
 // MOVIES CONTAINER
 // =====================================
 
@@ -95,9 +113,7 @@ movies.forEach((movie) => {
             class="movie-image"
         >
 
-        <h2>
-            ${movie.name}
-        </h2>
+        <h2>${movie.name}</h2>
 
         <p>
             ⭐ Rating:

@@ -1,3 +1,7 @@
+const API_URL =
+    'https://movie-booking-backend-knx1.onrender.com';
+
+
 const bookingsContainer =
     document.getElementById(
         'bookingsContainer'
@@ -66,7 +70,7 @@ async function fetchBookings() {
 
         const response =
             await fetch(
-                `http://localhost:5000/api/bookings/user/${username}`
+                `${API_URL}/api/bookings/user/${username}`
             );
 
         const bookings =
@@ -161,7 +165,7 @@ async function cancelBooking(
 
         const response =
             await fetch(
-                'http://localhost:5000/api/bookings/cancel',
+                `${API_URL}/api/bookings/cancel`,
                 {
                     method: 'POST',
 

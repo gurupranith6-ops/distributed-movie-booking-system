@@ -1,10 +1,12 @@
-require('dotenv').config();
-
 const mongoose = require('mongoose');
 
-const connectDB = require('./config/db');
+const dotenv = require('dotenv');
 
 const Seat = require('./models/Seat');
+
+dotenv.config();
+
+mongoose.connect(process.env.MONGO_URI);
 
 const movies = [
 
@@ -20,23 +22,17 @@ const movies = [
     'Spider-Man'
 ];
 
-const seedSeats = async () => {
+async function seedSeats() {
 
     try {
 
-        await connectDB();
+        await Seat.deleteMany({});
 
-        // DELETE OLD SEATS
+        for (const movie of movies) {
 
-        await Seat.deleteMany();
+            const seats = [];
 
-        const seats = [];
-
-        // CREATE 20 SEATS FOR EACH MOVIE
-
-        movies.forEach((movie) => {
-
-            for (let i = 1; i <= 20; i++) {
+            for (let i = 1; i <= 10; i++) {
 
                 seats.push({
 
@@ -49,12 +45,18 @@ const seedSeats = async () => {
                     bookedBy: null
                 });
             }
-        });
 
-        await Seat.insertMany(seats);
+            await Seat.insertMany(
+                seats
+            );
+
+            console.log(
+                `${movie} seats added`
+            );
+        }
 
         console.log(
-            'Seats seeded successfully'
+            'All seats seeded'
         );
 
         process.exit();
@@ -65,6 +67,6 @@ const seedSeats = async () => {
 
         process.exit(1);
     }
-};
+}
 
 seedSeats();

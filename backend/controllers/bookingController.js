@@ -1,5 +1,5 @@
 const Seat = require("../models/Seat");
-const redisClient = require("../config/redis");
+
 
 
 // ==========================================
@@ -34,67 +34,42 @@ const getSeats = async (req, res) => {
 
 const bookSeat = async (req, res) => {
 
-    const {
-        movieName,
-        seatNumber,
-        username
-    } = req.body;
-
-    const lockKey =
-        `lock:${movieName}:${seatNumber}`;
-
-    let lockAcquired = false;
-
     try {
 
-        const lock =
-            await redisClient.set(
-                lockKey,
-                username,
+        const {
+            movieName,
+            seatNumber,
+            username
+        } = req.body;
+
+        const seat =
+            await Seat.findOneAndUpdate(
+
                 {
-                    NX: true,
-                    PX: 5000
+                    movieName,
+                    seatNumber,
+                    isBooked: false
+                },
+
+                {
+                    $set: {
+                        isBooked: true,
+                        bookedBy: username
+                    }
+                },
+
+                {
+                    new: true
                 }
             );
 
-        if (!lock) {
-
-            return res.status(423).json({
-                message:
-                    'Seat is currently being booked by another user'
-            });
-        }
-
-        lockAcquired = true;
-
-        const seat =
-            await Seat.findOne({
-
-                movieName,
-
-                seatNumber
-            });
-
         if (!seat) {
-
-            return res.status(404).json({
-                message: 'Seat not found'
-            });
-        }
-
-        if (seat.isBooked) {
 
             return res.status(400).json({
                 message:
-                    'Seat already booked'
+                    'Seat already booked by another user'
             });
         }
-
-        seat.isBooked = true;
-
-        seat.bookedBy = username;
-
-        await seat.save();
 
         return res.status(200).json({
 
@@ -111,21 +86,8 @@ const bookSeat = async (req, res) => {
         return res.status(500).json({
             message: 'Booking failed'
         });
-
-    } finally {
-
-        if (
-            lockAcquired &&
-            redisClient.isOpen
-        ) {
-
-            await redisClient.del(
-                lockKey
-            );
-        }
     }
 };
-
 // ==========================================
 // GET USER BOOKINGS
 // ==========================================

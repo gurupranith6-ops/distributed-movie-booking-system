@@ -4,7 +4,7 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const { Server } = require('socket.io');
 const connectDB = require('./config/db');
-const { connectRedis } = require('./config/redis');
+
 const authRoutes = require('./routes/authRoutes');
 const bookingRoutes = require('./routes/bookingRoutes');
 
@@ -16,7 +16,7 @@ const server = http.createServer(app);
 
 // Connect to MongoDB and Redis before accepting requests
 connectDB();
-connectRedis();
+
 
 // Initialize Socket.IO for real-time synchronization across clients
 const io = new Server(server, {

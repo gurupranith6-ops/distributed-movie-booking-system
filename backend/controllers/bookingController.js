@@ -1,5 +1,5 @@
 const Seat = require("../models/Seat");
-const { redisClient } = require("../config/redis");
+const redisClient = require("../config/redis");
 
 
 // ==========================================

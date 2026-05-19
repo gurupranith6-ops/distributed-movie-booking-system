@@ -1,49 +1,70 @@
-const loginForm = document.getElementById("loginForm");
+const API_URL =
+    'https://movie-booking-backend-knx1.onrender.com';
 
-loginForm.addEventListener("submit", async (e) => {
 
-    e.preventDefault();
+const loginForm =
+    document.getElementById(
+        'loginForm'
+    );
 
-    const username = document.getElementById("username").value;
 
-    const password = document.getElementById("password").value;
+loginForm.addEventListener(
+    'submit',
+    async (e) => {
 
-    try {
+        e.preventDefault();
 
-        const response = await fetch(
-            "http://localhost:5000/api/auth/login",
-            {
-                method: "POST",
+        const username =
+            document.getElementById(
+                'username'
+            ).value;
 
-                headers: {
-                    "Content-Type": "application/json"
-                },
+        const password =
+            document.getElementById(
+                'password'
+            ).value;
 
-                body: JSON.stringify({
-                    username,
-                    password
-                })
+        try {
+
+            const response =
+                await fetch(
+                    `${API_URL}/api/auth/login`,
+                    {
+                        method: 'POST',
+
+                        headers: {
+                            'Content-Type':
+                                'application/json'
+                        },
+
+                        body: JSON.stringify({
+                            username,
+                            password
+                        })
+                    }
+                );
+
+            const data =
+                await response.json();
+
+            alert(data.message);
+
+            if (response.ok) {
+
+                localStorage.setItem(
+                    'username',
+                    data.user.username
+                );
+
+                window.location.href =
+                    'index.html';
             }
-        );
 
-        const data = await response.json();
+        } catch (error) {
 
-        alert(data.message);
+            console.log(error);
 
-        if (response.ok) {
-
-            localStorage.setItem(
-                "username",
-                data.user.username
-            );
-
-            window.location.href = "index.html";
+            alert('Login failed');
         }
-
-    } catch (error) {
-
-        console.log(error);
-
-        alert("Login failed");
     }
-});
+);

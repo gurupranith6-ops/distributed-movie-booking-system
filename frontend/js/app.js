@@ -1,5 +1,6 @@
 const API_URL =
-    'http://localhost:5000/api/bookings';
+    'https://movie-booking-backend-knx1.onrender.com';
+
 
 const seatsContainer =
     document.getElementById(
@@ -53,7 +54,9 @@ if (!selectedMovie) {
 }
 
 
+// ==========================================
 // SHOW MOVIE TITLE
+// ==========================================
 
 if (movieTitle) {
 
@@ -77,16 +80,17 @@ async function fetchSeats() {
 
         const response =
             await fetch(
-                `${API_URL}/seats/${selectedMovie}`
+                `${API_URL}/api/bookings/seats/${selectedMovie}`
             );
 
         const seats =
             await response.json();
 
-        seatsContainer.innerHTML = '';
+        seatsContainer.innerHTML =
+            '';
 
 
-        // SORT CORRECTLY
+        // SORT SEATS
 
         seats.sort((a, b) => {
 
@@ -127,7 +131,7 @@ async function fetchSeats() {
                 seat.seatNumber;
 
 
-            // BOOKED
+            // BOOKED SEAT
 
             if (seat.isBooked) {
 
@@ -209,7 +213,7 @@ bookBtn.addEventListener(
 
             const response =
                 await fetch(
-                    `${API_URL}/book`,
+                    `${API_URL}/api/bookings/book`,
                     {
                         method: 'POST',
 
@@ -257,6 +261,8 @@ bookBtn.addEventListener(
 );
 
 
+// ==========================================
 // INITIAL LOAD
+// ==========================================
 
 fetchSeats();

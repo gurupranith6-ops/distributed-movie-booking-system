@@ -1,44 +1,67 @@
-const registerForm = document.getElementById("registerForm");
+const API_URL =
+    'https://movie-booking-backend-knx1.onrender.com';
 
-registerForm.addEventListener("submit", async (e) => {
 
-    e.preventDefault();
+const registerForm =
+    document.getElementById(
+        'registerForm'
+    );
 
-    const username = document.getElementById("username").value;
 
-    const password = document.getElementById("password").value;
+registerForm.addEventListener(
+    'submit',
+    async (e) => {
 
-    try {
+        e.preventDefault();
 
-        const response = await fetch(
-            "http://localhost:5000/api/auth/register",
-            {
-                method: "POST",
+        const username =
+            document.getElementById(
+                'username'
+            ).value;
 
-                headers: {
-                    "Content-Type": "application/json"
-                },
+        const password =
+            document.getElementById(
+                'password'
+            ).value;
 
-                body: JSON.stringify({
-                    username,
-                    password
-                })
+        try {
+
+            const response =
+                await fetch(
+                    `${API_URL}/api/auth/register`,
+                    {
+                        method: 'POST',
+
+                        headers: {
+                            'Content-Type':
+                                'application/json'
+                        },
+
+                        body: JSON.stringify({
+                            username,
+                            password
+                        })
+                    }
+                );
+
+            const data =
+                await response.json();
+
+            alert(data.message);
+
+            if (response.ok) {
+
+                window.location.href =
+                    'login.html';
             }
-        );
 
-        const data = await response.json();
+        } catch (error) {
 
-        alert(data.message);
+            console.log(error);
 
-        if (response.ok) {
-
-            window.location.href = "login.html";
+            alert(
+                'Registration failed'
+            );
         }
-
-    } catch (error) {
-
-        console.log(error);
-
-        alert("Registration failed");
     }
-});
+);

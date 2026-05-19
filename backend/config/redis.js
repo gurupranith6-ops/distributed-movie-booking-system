@@ -14,7 +14,10 @@ const connectRedis = async () => {
 
     } catch (error) {
 
-        console.log('Redis Error:', error);
+        console.log(
+            'Redis Error:',
+            error
+        );
     }
 };
 

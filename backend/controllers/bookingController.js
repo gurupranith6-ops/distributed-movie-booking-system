@@ -67,18 +67,6 @@ const bookSeat = async (req, res) => {
 
         lockAcquired = true;
 
-        console.log(
-            `Lock acquired for ${movieName} ${seatNumber}`
-        );
-
-
-        // DELAY FOR CONCURRENCY DEMO
-
-        await new Promise(resolve =>
-            setTimeout(resolve, 5000)
-        );
-
-
         const seat =
             await Seat.findOne({
 
@@ -134,14 +122,9 @@ const bookSeat = async (req, res) => {
             await redisClient.del(
                 lockKey
             );
-
-            console.log(
-                `Lock released for ${movieName} ${seatNumber}`
-            );
         }
     }
 };
-
 
 // ==========================================
 // GET USER BOOKINGS
@@ -172,11 +155,17 @@ const cancelBooking = async (req, res) => {
 
     try {
 
-        const { seatNumber } = req.body;
+        const {
+            seatNumber,
+            movieName
+        } = req.body;
 
-        const seat = await Seat.findOne({
-            seatNumber
-        });
+        const seat =
+            await Seat.findOne({
+
+                seatNumber,
+                movieName
+            });
 
         if (!seat) {
 
@@ -186,12 +175,14 @@ const cancelBooking = async (req, res) => {
         }
 
         seat.isBooked = false;
+
         seat.bookedBy = null;
 
         await seat.save();
 
         res.json({
-            message: 'Booking cancelled successfully'
+            message:
+                'Booking cancelled successfully'
         });
 
     } catch (error) {
@@ -199,11 +190,11 @@ const cancelBooking = async (req, res) => {
         console.error(error);
 
         res.status(500).json({
-            message: 'Cancel booking failed'
+            message:
+                'Cancel booking failed'
         });
     }
 };
-
 
 module.exports = {
     getSeats,

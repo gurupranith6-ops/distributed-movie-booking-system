@@ -73,8 +73,6 @@ const username =
 
 if (!username) {
 
-    alert('Please login first');
-
     window.location.href =
         'login.html';
 }

@@ -1,61 +1,148 @@
 const http = require('http');
+
 const express = require('express');
+
 const cors = require('cors');
+
 const dotenv = require('dotenv');
+
 const { Server } = require('socket.io');
+
 const connectDB = require('./config/db');
 
-const authRoutes = require('./routes/authRoutes');
-const bookingRoutes = require('./routes/bookingRoutes');
+const authRoutes =
+    require('./routes/authRoutes');
 
-// Load environment variables from .env file
+const bookingRoutes =
+    require('./routes/bookingRoutes');
+
+
+// ==========================================
+// LOAD ENV VARIABLES
+// ==========================================
+
 dotenv.config();
 
-const app = express();
-const server = http.createServer(app);
 
-// Connect to MongoDB and Redis before accepting requests
+// ==========================================
+// INITIALIZE EXPRESS
+// ==========================================
+
+const app = express();
+
+const server =
+    http.createServer(app);
+
+
+// ==========================================
+// CONNECT DATABASE
+// ==========================================
+
 connectDB();
 
 
-// Initialize Socket.IO for real-time synchronization across clients
+// ==========================================
+// SOCKET.IO
+// ==========================================
+
 const io = new Server(server, {
-  cors: {
-    origin: '*',
-    methods: ['GET', 'POST'],
-  },
+
+    cors: {
+
+        origin: '*',
+
+        methods: ['GET', 'POST']
+    }
 });
+
 
 io.on('connection', (socket) => {
-  console.log('Socket connected:', socket.id);
 
-  socket.on('disconnect', () => {
-    console.log('Socket disconnected:', socket.id);
-  });
+    console.log(
+        `Socket connected: ${socket.id}`
+    );
+
+    socket.on('disconnect', () => {
+
+        console.log(
+            `Socket disconnected: ${socket.id}`
+        );
+    });
 });
 
-// Make Socket.IO available to controllers via app locals
+
+// ==========================================
+// MAKE IO AVAILABLE GLOBALLY
+// ==========================================
+
 app.set('io', io);
 
-// Enable CORS so frontend apps can call this backend
+
+// ==========================================
+// MIDDLEWARES
+// ==========================================
+
 app.use(cors());
 
-// Parse incoming JSON requests
 app.use(express.json());
 
-// Mount authentication routes under /api/auth
-app.use('/api/auth', authRoutes);
 
-// Mount booking routes under /api/bookings
-app.use('/api/bookings', bookingRoutes);
+// ==========================================
+// REQUEST LOGGER
+// ==========================================
 
-// Simple root route for health check
-app.get('/', (req, res) => {
-  res.send('Distributed Booking Server Running');
+app.use((req, res, next) => {
+
+    console.log(
+
+        `Request handled by Process ID: ${process.pid}`
+    );
+
+    next();
 });
 
-const PORT = process.env.PORT || 5000;
+
+// ==========================================
+// ROUTES
+// ==========================================
+
+app.use(
+    '/api/auth',
+    authRoutes
+);
+
+app.use(
+    '/api/bookings',
+    bookingRoutes
+);
+
+
+// ==========================================
+// ROOT ROUTE
+// ==========================================
+
+app.get('/', (req, res) => {
+
+    res.send(
+
+        `Distributed Booking Server Running
+         | Process ID: ${process.pid}`
+    );
+});
+
+
+// ==========================================
+// START SERVER
+// ==========================================
+
+const PORT =
+    process.env.PORT || 5000;
 
 server.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+
+    console.log(
+
+        `Server running on port ${PORT}
+         | Process ID: ${process.pid}`
+    );
 });

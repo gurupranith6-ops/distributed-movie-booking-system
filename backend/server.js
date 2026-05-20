@@ -95,7 +95,11 @@ app.use((req, res, next) => {
 
     console.log(
 
-        `Request handled by Process ID: ${process.pid}`
+        `Request:
+         ${req.method}
+         ${req.url}
+         | Process ID: ${process.pid}
+         | Time: ${new Date().toLocaleTimeString()}`
     );
 
     next();
